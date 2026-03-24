@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie XMPP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@xmpp/client@0.13.6/dist/xmpp.min.js" crossorigin></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Écran de connexion -->
+        <div id="login-screen" class="login-screen">
+            <div class="login-card">
+                <div class="login-header">
+                    <i class="fas fa-comments"></i>
+                    <h2>Messagerie XMPP</h2>
+                    <p>Connectez-vous à votre compte</p>
+                </div>
+                <div class="login-form">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="jid" placeholder="utilisateur@domaine" value="alice@192.168.11.125">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Mot de passe">
+                    </div>
+                    <button id="connect-btn" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Se connecter
+                    </button>
+                    <p id="connection-status" class="status">Déconnecté</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interface principale -->
+        <div id="main-interface" class="main-interface hidden">
+            <!-- Barre latérale gauche -->
+            <div class="sidebar">
+                <div class="user-profile">
+                    <div class="avatar">
+                        <img src="https://ui-avatars.com/api/?name=User&background=4CAF50&color=fff" alt="Avatar">
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="current-user">Utilisateur</span>
+                        <span class="user-status online"><i class="fas fa-circle"></i> En ligne</span>
+                    </div>
+                    <button id="logout-btn" class="icon-btn" title="Se déconnecter">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" data-tab="conversations">
+                        <i class="fas fa-comment-dots"></i>
+                        Conversations
+                    </button>
+                    <button class="tab-btn" data-tab="contacts">
+                        <i class="fas fa-address-book"></i>
+                        Contacts
+                    </button>
+                </div>
+
+                <div id="conversations-list" class="conversations-list active">
+                    <div class="list-header">
+                        <input type="text" placeholder="Rechercher..." class="search-input">
+                    </div>
+                    <div class="list-items" id="conversation-items">
+                        <div class="loading">Chargement des conversations...</div>
+                    </div>
+                </div>
+
+                <div id="contacts-list" class="contacts-list">
+                    <div class="list-header">
+                        <input type="text" placeholder="Rechercher un contact..." class="search-input">
+                        <button class="btn-add-contact" title="Ajouter un contact">
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                    </div>
+                    <div class="list-items" id="contact-items">
+                        <div class="loading">Chargement des contacts...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de conversation -->
+            <div class="chat-area">
+                <div class="chat-header" id="chat-header">
+                    <div class="contact-info">
+                        <div class="contact-avatar">
+                            <img src="https://ui-avatars.com/api/?name=Contact&background=2196F3&color=fff" alt="">
+                        </div>
+                        <div class="contact-details">
+                            <h3 id="current-contact-name">Sélectionnez une conversation</h3>
+                            <p id="contact-status" class="contact-status">Choisissez un contact pour démarrer</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="icon-btn"><i class="fas fa-phone" style="color:#4CAF50"></i></button>
+                        <button class="icon-btn"><i class="fas fa-video" style="color:#2196F3"></i></button>
+                        <button class="icon-btn"><i class="fas fa-info-circle" style="color:#FF9800"></i></button>
+                    </div>
+                </div>
+
+                <!-- Indicateur de frappe -->
+                <div id="typing-indicator" class="typing-indicator hidden">
+                    <span id="typing-text"></span>
+                    <span class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </span>
+                </div>
+
+                <div class="messages-container" id="messages-container">
+                    <div id="messages" class="messages"></div>
+                </div>
+
+                <!-- Zone de saisie -->
+                <div class="message-input-area">
+                    <!-- Bouton envoi fichier (XEP-0363) -->
+                    <button class="attach-btn" id="attach-btn" title="Envoyer un fichier">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.zip,.txt">
+
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="message-input" 
+                            placeholder="Écrivez votre message..."
+                            autocomplete="off"
+                        >
+                        <button class="emoji-btn"><i class="far fa-smile"></i></button>
+                    </div>
+                    <button id="send-btn" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+
+            
+                <div id="emoji-popup" class="emoji-popup hidden">
+                    <span class="emoji-reaction" data-emoji="👍">👍</span>
+                    <span class="emoji-reaction" data-emoji="❤️">❤️</span>
+                    <span class="emoji-reaction" data-emoji="😂">😂</span>
+                    <span class="emoji-reaction" data-emoji="😮">😮</span>
+                    <span class="emoji-reaction" data-emoji="😢">😢</span>
+                    <span class="emoji-reaction" data-emoji="🔥">🔥</span>
+                </div>
+            </div>
+
+            <div class="details-sidebar" id="details-sidebar"></div>
+        </div>
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
