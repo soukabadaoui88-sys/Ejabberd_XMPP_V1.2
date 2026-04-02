@@ -330,7 +330,7 @@ async function uploadFile(file) {
 
     } catch (err) {
         loadingEl.remove();
-        console.error('❌ Erreur upload:', err);
+        console.error(' Erreur upload:', err);
         alert('Erreur envoi fichier: ' + err.message + '\n\nVérifiez que mod_http_upload est activé sur ejabberd.');
     }
 }
@@ -342,7 +342,6 @@ async function uploadFile(file) {
 function showEmojiPopup(msgEl, msgId) {
     activeEmojiMsgId = msgId;
 
-    // ✅ Déplacer le popup DANS le message (pas dans le conteneur global)
     msgEl.appendChild(emojiPopup);
     emojiPopup.classList.remove('hidden');
 }
@@ -547,7 +546,7 @@ async function loadAllEjabberdUsers() {
         renderContacts();
         renderConversations();
     } catch (error) {
-        console.error('❌ Erreur chargement utilisateurs:', error);
+        console.error(' Erreur chargement utilisateurs:', error);
         if (contactItems) contactItems.innerHTML = '<div class="loading">Impossible de charger les contacts.</div>';
     }
 }
@@ -696,7 +695,7 @@ async function selectConversation(jid) {
 
     const loadingEl = document.createElement('div');
     loadingEl.className = 'message incoming archive';
-    loadingEl.innerHTML = '<div class="message-body">⏳ Chargement de l\'historique...</div>';
+    loadingEl.innerHTML = '<div class="message-body"> Chargement de l\'historique...</div>';
     messagesDiv.appendChild(loadingEl);
 
     if (!mamLoadedFor.has(jid)) {
@@ -1246,7 +1245,7 @@ async function discoverUploadService() {
                     for (const item of items) {
                         const jidVal = item.attrs.jid || '';
                         if (jidVal.startsWith('upload.')) {
-                            console.log('✅ Service upload trouvé:', jidVal);
+                            console.log(' Service upload trouvé:', jidVal);
                             resolve(jidVal);
                             return;
                         }
