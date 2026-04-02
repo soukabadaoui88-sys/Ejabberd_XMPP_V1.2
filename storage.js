@@ -11,7 +11,7 @@ const Storage = (() => {
     // ---- INIT ----
     function init(userJid) {
         _userJid = userJid;
-        console.log(`💾 Storage initialisé pour ${userJid}`);
+        console.log(` Storage initialisé pour ${userJid}`);
     }
 
     function key(type) {
@@ -116,7 +116,7 @@ const Storage = (() => {
         // Supprimer les clés xmpp_ qui ont plus de 30j
         // (on ne peut pas dater les entrées individuellement sans overhead,
         //  donc on supprime les statuts de messages qui ne sont plus dans le cache)
-        console.log('🧹 Nettoyage localStorage...');
+        console.log(' Nettoyage localStorage...');
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
